@@ -1,28 +1,27 @@
 #!/usr/bin/env python
 
-__author__      = "Tapo4ek"
-__license__     = "GPL"
+__author__ = "Tapo4ek"
+__license__ = "GPL"
 
 from math import ceil
+
 
 class Pagination:
     """
     This class for pagination if iterable objects
     usage:  paginator = Pagination(some_list, entries_per_page, current_page, pageset_range, changeset_range)
     """
-    def __init__(self, array=list(), entries_per_page=10, current_page=1, pageset_range=5, changeset_range=10):
+    def __init__(self, total_entries=1, entries_per_page=10, current_page=1, pageset_range=5, changeset_range=10):
         """
-        array = iterable object
         entries_per_page = How many elements you want to show on the page (int)
         current_page = Your current page (int)
         pageset_range = How many pages you will see left and right from the current page (int)
         changeset_range = If you want to jump pages for example +10 or -10 (int)
         """
         self.entries_per_page = abs(entries_per_page)
-        self.total_entries = len(array)
-        self.last_page = ceil(self.total_entries/self.entries_per_page) # if you are using python lower then version 3.0 use: ceil(float(self.total_entries)/self.entries_per_page)
+        self.total_entries = total_entries
+        self.last_page = ceil(self.total_entries / self.entries_per_page)  # if you are using python lower then version 3.0 use: ceil(float(self.total_entries)/self.entries_per_page)
         self.changeset_range = changeset_range
-        self.array = array
         self.pageset_range = abs(pageset_range)
         self.current_page = abs(current_page)
         self.first_page = 1
@@ -50,7 +49,7 @@ class Pagination:
         Will return iterable object of all pages
         if you are using python less then 3.0 use xrange instead of range
         """
-        return range(self.first_page, self.last_page+1)
+        return range(self.first_page, self.last_page + 1)
 
     def entries_pages(self):
         """
@@ -64,17 +63,18 @@ class Pagination:
         if (self.current_page > self.pageset_range) and (self.current_page + self.pageset_range <= self.last_page):
             return range(self.current_page - self.pageset_range, self.current_page + self.pageset_range + 1)
         if (self.current_page <= self.pageset_range) and (self.current_page + self.pageset_range <= self.last_page):
-            return range(self.first_page , self.current_page + self.pageset_range + 1)
+            return range(self.first_page, self.current_page + self.pageset_range + 1)
         if (self.current_page > self.pageset_range) and (self.current_page + self.pageset_range > self.last_page):
             return range(self.current_page - self.pageset_range, self.last_page + 1)
         if (self.current_page <= self.pageset_range) and (self.current_page + self.pageset_range > self.last_page):
-            return range(self.first_page , self.last_page + 1)
+            return range(self.first_page, self.last_page + 1)
 
-    def array_at_page(self):
+    def array_at_page(self, array=list()):
         """
         I am using jinja2
         so my code looks like:
-        {% for i in pager.array_at_page() %}
+        array is iterable object
+        {% for i in pager.array_at_page(list()) %}
             <tr>
                 <td>{{ i.id }}</td>
                 <td>{{ i.amount }} {{ i.currency }}</td>
@@ -109,7 +109,7 @@ class Pagination:
         </form>
 
         """
-        return self.array[self.entries_per_page * (self.current_page-1):][:self.entries_per_page]
+        return array[self.entries_per_page * (self.current_page - 1):][:self.entries_per_page]
 
     def plus_range(self):
         """
@@ -148,4 +148,3 @@ class Pagination:
         if self.first_page <= value <= self.last_page:
             return value
         return self.current_page
-
